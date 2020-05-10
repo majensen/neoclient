@@ -1,0 +1,3 @@
+[submodule "libneo4j-client"]
+	path = libneo4j-client
+	url = https://github.com/majensen/libneo4j-client
