@@ -1,0 +1,5 @@
+@dl_resolve_using = dl_findfile(qw{-L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto});
+for (@dl_resolve_using) {
+   my $libref = dl_load_file($_);
+   push @dl_librefs,$libref;
+}
