@@ -6,6 +6,7 @@ use Config;
 use File::Find;
 use File::Spec;
 use File::Copy;
+use Cwd qw/realpath/;
 use v5.10;
 use IPC::Run qw/run/;
 use Carp qw/carp croak/;
@@ -108,7 +109,9 @@ sub _configure {
 sub _neo4j_client_tls {
   my $tls =<<TLS;
 package Neo4j::ClientTLS;
+use Cwd qw{realpath};
 \$Neo4j::Client::LIBS_SSL='$tls_ld';
+sub Neo4j::Client::LIBS_SSL_ARY { split /\\s+/,\$Neo4j::Client::LIBS_SSL }
 1;
 TLS
   open my $f,">",File::Spec->catfile(qw/lib Neo4j ClientTLS.pm/) or croak $!;
@@ -173,6 +176,7 @@ TRY
   }
   
   for my $libdir (@$try_libdirs) {
+    $libdir = realpath $libdir;
     $cc->unshift_extra_linker_flags( "-L".$libdir ) if $libdir;
     if ($cc->try_compile_run( source => $tryc )) {
       $lib_found=1;

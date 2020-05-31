@@ -2,6 +2,7 @@
 #                 access to neo4j-client.h
 package Neo4j::Client;
 use Neo4j::ClientTLS;
+use Cwd qw/realpath/;
 use File::ShareDir qw/module_dir/;
 use File::Spec;
 
@@ -11,12 +12,15 @@ use warnings;
 $Neo4j::Client::VERSION="0.1";
 
 $Neo4j::Client::LIBS =
-  "-L".module_dir(__PACKAGE__)." -lClient";
+  "-L".realpath(module_dir(__PACKAGE__))." -lClient";
 
 $Neo4j::Client::INC =
-  "-I".module_dir(__PACKAGE__);
+  "-I".realpath(module_dir(__PACKAGE__));
 
-sub dir { module_dir(__PACKAGE__) }
+sub Neo4j::Client::LIBS_ARY { split /\s+/,$Neo4j::Client::LIBS }
+sub Neo4j::Client::INC_ARY { split /\s+/,$Neo4j::Client::INC }
+
+sub dir { realpath(module_dir(__PACKAGE__)) }
 
 =head1 NAME
 

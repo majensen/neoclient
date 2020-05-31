@@ -4,8 +4,6 @@ buffering_iostream.h
 build/compile
 build/config.guess
 build/config.h.in
-build/config.log
-build/config.status
 build/config.sub
 build/configure
 build/configure.ac
@@ -95,5 +93,7 @@ build/src/lib/util.h
 build/src/lib/values.c
 build/src/lib/values.h
 lib/Neo4j/Client.pm
+t/001_mod.t
+t/002_script.t
 Makefile.PL
 MANIFEST			This list of files

@@ -128,13 +128,19 @@ through. (to call Client.dylib .dylib and not .bundle)
 
 # Steps for build
 
-* Ship with libneo4j-client @ v2.2.0 in toplevel dir
+* Perform static build, not dynamic
+* Eschew the XS machine and Dynaloader - Neo4j::Client basically just
+  sets up the library in its <arch>/auto directory and provides
+  pointers to it.
+
+* Push with libneo4j-client @ v2.2.0 in toplevel dir
 	* Along with copies (not links) of depcomp, install-sh,
       libtool,ltmain.sh,config.sub, alocal.m4, m4/
 	* Basically, run autoreconf --install in libneo4j-client and
       commit this.
 * Copy libneo4j-client/src/lib/* to build/
-* If tls is selected:
+* Auto-search for openssl
   * Find the directories for libperl, libssl, libcrypto libraries
   * Find the include directory for openssl.h
+  * if not there, configure with --without-tls
 
