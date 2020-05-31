@@ -57,6 +57,7 @@ WriteMakefile(
     'lib/Neo4j/ClientTLS.pm' => '$(INST_LIB)/Neo4j/ClientTLS.pm',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
     "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
+    'bin/neoclient.pl' => '$(INST_SCRIPT)/neoclient.pl',
   },
   C => [grep /\.c$/, @src_files],
   H => [(grep /\.h$/, @src_files),'config.h'],
