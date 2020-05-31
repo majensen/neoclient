@@ -1,7 +1,7 @@
 # has to provide: access to the lib
 #                 access to neo4j-client.h
-
 package Neo4j::Client;
+use Neo4j::ClientTLS;
 use File::ShareDir qw/module_dir/;
 use File::Spec;
 
@@ -23,6 +23,11 @@ sub dir { module_dir(__PACKAGE__) }
 Neo4j::Client - build libneo4j-client on your machine
 
 =head1 SYNOPSIS
+
+ use Neo4j::Client;
+ $Neo4j::Client::LIBS;
+ $Neo4j::Client::INC;
+ $Neo4j::Client::LIBS_SSL;
 
 =head1 DESCRIPTION
 

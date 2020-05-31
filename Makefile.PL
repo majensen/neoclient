@@ -16,11 +16,12 @@ use strict;
 my @try_libdirs = ("", qw{/usr/lib /usr/local/opt/openssl/lib});
 my @try_incdirs = ("", qw{/usr/include /usr/local/opt/openssl/include});
 
-my ($cc, $ld, $libd) = find_openssl(\@try_incdirs, \@try_libdirs);
-
-my $TLS = ($cc ? '--with-tls' : '--without-tls');
-my $WITH_LIBS = ($libd ? "--with-libs=$libd" : '');
-
+my ($tls_cc, $tls_ld, $tls_libd) = find_openssl(\@try_incdirs, \@try_libdirs);
+my  $TLS = ($tls_cc ? '--with-tls' : '--without-tls');
+my  $WITH_LIBS = ($tls_libd ? "--with-libs=$tls_libd" : '');
+say STDERR "Building without TLS - openssl not found" unless $tls_cc;
+_neo4j_client_tls();
+  
 
 my @configure_opts = ($TLS,$WITH_LIBS || ());
 
@@ -48,17 +49,18 @@ WriteMakefile(
   LDFROM => join(' ', @o_files),
   LINKTYPE => 'static',
   
-  ($cc ? (CCFLAGS => $cc) : ()),
-  ($ld ? (LIBS => $ld) : ()),
+  ($tls_cc ? (CCFLAGS => $tls_cc) : ()),
+  ($tls_ld ? (LIBS => $tls_ld) : ()),
   CONFIGURE => \&_configure,
   PM => {
     'lib/Neo4j/Client.pm' => '$(INST_LIB)/Neo4j/Client.pm',
+    'lib/Neo4j/ClientTLS.pm' => '$(INST_LIB)/Neo4j/ClientTLS.pm',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
     "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
   },
   C => [grep /\.c$/, @src_files],
   H => [(grep /\.h$/, @src_files),'config.h'],
-  realclean => { FILES => ['config.h', 'build/config.h',@files] },
+  realclean => { FILES => ['config.h', 'build/config.h',@files,'lib/Neo4j/ClientTLS.pm'] },
  );
 
 sub _configure {
@@ -87,6 +89,18 @@ sub _configure {
     close($f);
   }
   return {};
+}
+
+sub _neo4j_client_tls {
+  my $tls =<<TLS;
+package Neo4j::ClientTLS;
+\$Neo4j::Client::LIBS_SSL='$tls_ld';
+1;
+TLS
+  open my $f,">",File::Spec->catfile(qw/lib Neo4j ClientTLS.pm/) or croak $!;
+  print $f $tls;
+  close $f;
+  return 1;
 }
 
 sub Lperl {
