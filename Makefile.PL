@@ -1,51 +1,64 @@
 use ExtUtils::MakeMaker;
+use ExtUtils::CChecker;
+use Try::Tiny;
+use File::Temp qw/tempfile tempdir/;
 use Config;
 use File::Find;
 use File::Spec;
+use File::Copy;
 use v5.10;
 use IPC::Run qw/run/;
 use Carp qw/carp croak/;
 use strict;
 
-# need to generalize the extensions
 
-opendir my $src, './build/src/lib';
+# Find openssl or exclude TLS support
+my @try_libdirs = ("", qw{/usr/lib /usr/local/opt/openssl/lib});
+my @try_incdirs = ("", qw{/usr/include /usr/local/opt/openssl/include});
+
+my ($cc, $ld, $libd) = find_openssl(\@try_incdirs, \@try_libdirs);
+
+my $TLS = ($cc ? '--with-tls' : '--without-tls');
+my $WITH_LIBS = ($libd ? "--with-libs=$libd" : '');
+
+
+my @configure_opts = ($TLS,$WITH_LIBS || ());
+
+my $libdir = File::Spec->catdir(qw/build src lib/);
+opendir my $src, $libdir;
 my @files = grep /\.[ch]$/, readdir $src;
-my @src_files = map { "build/src/lib/$_" } @files;
-push @src_files, 'Client.c';
-my @o_files = map { s/\.c$/.o/;$_ } grep /\.c$/, @files;
+# stage the libneo4client source+headers
+copy (File::Spec->catfile($libdir,$_), File::Spec->curdir) for @files;
 
-my $TLS = '--with-tls';
-my $WITH_LIBS = '--with-libs=/usr/local/opt/openssl@1.1/';
-my @configure_opts = ($TLS,$WITH_LIBS);
-my $LDDLFLAGS = $Config{lddlflags};
-if ($^O =~ /darwin/i) {
-  $LDDLFLAGS =~ s/bundle/shared/;
+# config.h will be in the curdir - hack the staged files
+for (@files) {
+  system "$^X -i -ne 's{\.\./\.\./config\.h}{config\.h};print;' $_";
+  croak $! unless !$?;
 }
-say $LDDLFLAGS;
+
+my @src_files = grep /\.c$/, @files;
+my @o_files = map { s/\.c/\.o/;$_ } @src_files;
+my $LDDLFLAGS = $Config{lddlflags};
 
 WriteMakefile(
   NAME => 'Neo4j::Client',
   VERSION_FROM => 'lib/Neo4j/Client.pm',
-  # O_FILES are prefixed with build/src/lib
-  OBJECT => '$(O_FILES)',
+  OBJECT => join(' ',@o_files),
   LDDLFLAGS => $LDDLFLAGS,
-  # LDFROM files are basenames
-  LDFROM => join(' ', @o_files, 'Client.o'),
-  # both OBJECT and LDFROM are necessary as defined here
-  CCFLAGS => '-I/usr/local/opt/openssl@1.1/include',
-  LIBS => [join(' ',Lperl(),'-L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto -lperl')],
-  DLEXT => $Config{so},
+  LDFROM => join(' ', @o_files),
+  LINKTYPE => 'static',
+  
+  ($cc ? (CCFLAGS => $cc) : ()),
+  ($ld ? (LIBS => $ld) : ()),
   CONFIGURE => \&_configure,
   PM => {
     'lib/Neo4j/Client.pm' => '$(INST_LIB)/Neo4j/Client.pm',
-    'lib/Neo4j/Client.bs' => '$(INST_ARCHLIB)/auto/Neo4j/Client/Client.bs',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
-    "blib/arch/auto/Neo4j/Client/Client.$Config{so}" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.$Config{so}",
+    "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
   },
   C => [grep /\.c$/, @src_files],
-  H => [(grep /\.h$/, @src_files),'build/config.h'],
-  realclean => { FILES => 'build/config.h' },
+  H => [(grep /\.h$/, @src_files),'config.h'],
+  realclean => { FILES => ['config.h', 'build/config.h',@files] },
  );
 
 sub _configure {
@@ -55,6 +68,7 @@ sub _configure {
   }
   say "Running configure";
   chdir 'build';
+  $DB::single=1;
   my $rc = run ['./configure',@configure_opts], \$in,\$out,\$err;
   chdir '..';
   if (!$rc) {
@@ -62,10 +76,10 @@ sub _configure {
   }
   else {
     # kludge away the VERSION define
-    open my $f, 'build/config.h' or croak "build/config.h: $!";
+    open my $f, File::Spec->catfile(qw'build config.h') or croak "build/config.h: $!";
     my @lines = <$f>;
     close($f);
-    open $f, ">", 'build/config.h';
+    open $f, ">", 'config.h'; # create in the toplevel dir
     for (@lines) {
       next if /#define VERSION/;
       print $f $_;
@@ -84,5 +98,94 @@ sub Lperl {
   my $dir =[File::Spec->splitpath($lib)]->[1];
   $dir =~ s/\/$//;
   return "-L$dir";
+}
+
+sub find_openssl {
+  my ($try_incdirs, $try_libdirs) = @_;
+
+  my $cc = ExtUtils::CChecker->new( quiet => 1);
+  my ($inc_found, $lib_found);
+  $cc->push_extra_linker_flags('-lssl');
+  $cc->push_extra_linker_flags('-lcrypto');
+  my $tryc =<<'TRY';
+#include <openssl/crypto.h>
+int main() {
+  printf("SSL Version: %s\n", OpenSSL_version(0));
+  return 0;
+}
+TRY
+  my $libd;
+  open(OLDERR,">&",\*STDERR);
+  close(STDERR);
+  for my $incdir (@$try_incdirs) {
+    $cc->push_extra_compiler_flags("-I$incdir") if $incdir;
+    if (eval { $cc->try_compile( source => $tryc ) }) {
+      $inc_found = 1;
+      last;
+    }
+    $cc->pop_extra_compiler_flags if $incdir;
+  }
+
+  unless ($inc_found) {
+    open(STDERR, ">&OLDERR");
+    return;
+  }
+  
+  for my $libdir (@$try_libdirs) {
+    $cc->unshift_extra_linker_flags( "-L".$libdir ) if $libdir;
+    if ($cc->try_compile_run( source => $tryc )) {
+      $lib_found=1;
+      $libd = $libdir;
+      $libd =~ s/lib$//;
+      last;
+    }
+    $cc->shift_extra_linker_flags if $libdir
+  }
+  if ($lib_found) {
+    open(STDERR, ">&OLDERR");
+    return (join( ' ', @{$cc->extra_compiler_flags}),
+	    join( ' ', @{$cc->extra_linker_flags}),
+	   $libd);
+  }
+  open(STDERR, ">&OLDERR");  
+  return;
+}
+
+sub ExtUtils::CChecker::try_compile {
+  my $self = shift;
+  my %args = @_;
+  return unless $args{source};
+  my $dir = tempdir( CLEANUP => 1);
+  my ($fh, $fn) = tempfile('',DIR=>$dir,SUFFIX => '.c',UNLINK=>1) or die $!;
+  print $fh $args{source};
+  close($fh);
+  $args{source} = $fn;
+  try {
+    return $self->compile(%args);
+  } catch {
+    return 0;
+  };
+}
+
+# monkey patches for ExtUtils::CChecker
+
+sub ExtUtils::CChecker::unshift_extra_linker_flags {
+  my $self = shift;
+  unshift @{$self->{extra_linker_flags}},@_;
+}
+
+sub ExtUtils::CChecker::shift_extra_linker_flags {
+  my $self = shift;
+  shift @{$self->{extra_linker_flags}};
+}
+
+sub ExtUtils::CChecker::pop_extra_compiler_flags {
+  my $self = shift;
+  pop @{$self->{extra_compiler_flags}};
+}
+
+sub ExtUtils::CChecker::pop_include_dirs {
+  my $self = shift;
+  pop @{$self->{include_dirs}};
 }
 

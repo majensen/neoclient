@@ -134,5 +134,7 @@ through. (to call Client.dylib .dylib and not .bundle)
 	* Basically, run autoreconf --install in libneo4j-client and
       commit this.
 * Copy libneo4j-client/src/lib/* to build/
-* Find the directories for libperl, libssl, libcrypto libraries.
+* If tls is selected:
+  * Find the directories for libperl, libssl, libcrypto libraries
+  * Find the include directory for openssl.h
 

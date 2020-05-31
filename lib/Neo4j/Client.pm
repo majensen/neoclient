@@ -1,24 +1,22 @@
-# has to provide: access to the dynamic lib
+# has to provide: access to the lib
 #                 access to neo4j-client.h
+
 package Neo4j::Client;
-use base DynaLoader;
 use File::ShareDir qw/module_dir/;
+use File::Spec;
 
 use strict;
 use warnings;
 
-BEGIN {
-  $Neo4j::Client::VERSION="0.1";
-}
-if ($^O =~ /darwin/i) {
-  $DynaLoader::dl_dlext = 'dylib';
-}
+$Neo4j::Client::VERSION="0.1";
 
-__PACKAGE__->bootstrap;
+$Neo4j::Client::LIBS =
+  "-L".module_dir(__PACKAGE__)." -lClient";
 
-sub dir {
-  return module_dir('Neo4j::Client');
-}
+$Neo4j::Client::INC =
+  "-I".module_dir(__PACKAGE__);
+
+sub dir { module_dir(__PACKAGE__) }
 
 =head1 NAME
 
