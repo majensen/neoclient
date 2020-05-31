@@ -16,18 +16,23 @@ use strict;
 my @try_libdirs = ("", qw{/usr/lib /usr/local/opt/openssl/lib});
 my @try_incdirs = ("", qw{/usr/include /usr/local/opt/openssl/include});
 
-my ($tls_cc, $tls_ld, $tls_libd) = find_openssl(\@try_incdirs, \@try_libdirs);
-my  $TLS = ($tls_cc ? '--with-tls' : '--without-tls');
+my $ssl_flags = find_openssl(\@try_incdirs, \@try_libdirs);
+say STDERR "Building without TLS - openssl not found" unless $ssl_flags;
+my ($tls_cc, $tls_ld, $tls_libd);
+(($tls_cc, $tls_ld, $tls_libd) = @$ssl_flags) if $ssl_flags;
+my  $TLS = ($ssl_flags ? '--with-tls' : '--without-tls');
 my  $WITH_LIBS = ($tls_libd ? "--with-libs=$tls_libd" : '');
-say STDERR "Building without TLS - openssl not found" unless $tls_cc;
+
 _neo4j_client_tls();
-  
 
 my @configure_opts = ($TLS,$WITH_LIBS || ());
 
 my $libdir = File::Spec->catdir(qw/build src lib/);
 opendir my $src, $libdir;
 my @files = grep /\.[ch]$/, readdir $src;
+if (!$ssl_flags) { # remove openssl files
+  @files = grep !/openssl/, @files;
+}
 # stage the libneo4client source+headers
 copy (File::Spec->catfile($libdir,$_), File::Spec->curdir) for @files;
 
@@ -69,7 +74,7 @@ WriteMakefile(
   },
   C => [grep /\.c$/, @src_files],
   H => [(grep /\.h$/, @src_files),'config.h'],
-  realclean => { FILES => ['config.h', 'build/config.h',@files,'lib/Neo4j/ClientTLS.pm'] },
+  realclean => { FILES => ['a.out','config.h', 'build/config.h',@files,'lib/Neo4j/ClientTLS.pm'] },
  );
 
 sub _configure {
@@ -126,6 +131,19 @@ sub Lperl {
 sub find_openssl {
   my ($try_incdirs, $try_libdirs) = @_;
 
+  my ($in,$out,$err);
+  
+  if (run([qw/pkg-config --variable=libdir openssl/],\$in,\$out,\$err)) {
+    print $out;
+    chomp $out;
+    push @{$try_libdirs}, $out;
+  }
+  if (run([qw/pkg-config --variable=includedir openssl/],\$in,\$out,\$err)) {
+    print $out;
+    chomp $out;
+    push @{$try_incdirs}, $out;
+  }
+  
   my $cc = ExtUtils::CChecker->new( quiet => 1);
   my ($inc_found, $lib_found);
   $cc->push_extra_linker_flags('-lssl');
@@ -166,9 +184,9 @@ TRY
   }
   if ($lib_found) {
     open(STDERR, ">&OLDERR");
-    return (join( ' ', @{$cc->extra_compiler_flags}),
+    return [join( ' ', @{$cc->extra_compiler_flags}),
 	    join( ' ', @{$cc->extra_linker_flags}),
-	   $libd);
+	   $libd];
   }
   open(STDERR, ">&OLDERR");  
   return;
