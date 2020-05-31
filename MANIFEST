@@ -1,6 +1,5 @@
 bin/neoclient.pl
-buffering_iostream.c
-buffering_iostream.h
+build/aclocal.m4
 build/compile
 build/config.guess
 build/config.h.in

@@ -52,6 +52,8 @@ WriteMakefile(
   VERSION_FROM => 'lib/Neo4j/Client.pm',
   BUILD_REQUIRES => {
     'ExtUtils::MakeMaker' => 0,
+    'Test::Exception' => 0,
+    'File::ShareDir' => 0,
   },
   CONFIGURE_REQUIRES => {
     'ExtUtils::CChecker' => 0,
@@ -61,8 +63,9 @@ WriteMakefile(
   OBJECT => join(' ',@o_files),
   LDDLFLAGS => $LDDLFLAGS,
   LDFROM => join(' ', @o_files),
-  LINKTYPE => 'static',
-  
+  LINKTYPE => 'dynamic',
+  linkext => { LINKTYPE => 'dynamic' },
+  test => {TESTS => 't/*.t'},
   ($tls_cc ? (CCFLAGS => $tls_cc) : ()),
   ($tls_ld ? (LIBS => $tls_ld) : ()),
   CONFIGURE => \&_configure,
@@ -71,6 +74,7 @@ WriteMakefile(
     'lib/Neo4j/ClientTLS.pm' => '$(INST_LIB)/Neo4j/ClientTLS.pm',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
     "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
+    "blib/arch/auto/Neo4j/Client/Client.$Config{so}" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.$Config{so}",
     'bin/neoclient.pl' => '$(INST_SCRIPT)/neoclient.pl',
   },
   C => [grep /\.c$/, @src_files],
@@ -135,18 +139,22 @@ sub find_openssl {
   my ($try_incdirs, $try_libdirs) = @_;
 
   my ($in,$out,$err);
-  
-  if (run([qw/pkg-config --variable=libdir openssl/],\$in,\$out,\$err)) {
-    print $out;
-    chomp $out;
-    push @{$try_libdirs}, $out;
-  }
-  if (run([qw/pkg-config --variable=includedir openssl/],\$in,\$out,\$err)) {
-    print $out;
-    chomp $out;
-    push @{$try_incdirs}, $out;
-  }
-  
+
+  try {
+    if (run([qw/pkg-config --variable=libdir openssl/],\$in,\$out,\$err)) {
+      print $out;
+      chomp $out;
+      push @{$try_libdirs}, $out;
+    }
+    if (run([qw/pkg-config --variable=includedir openssl/],\$in,\$out,\$err)) {
+      print $out;
+      chomp $out;
+      push @{$try_incdirs}, $out;
+    }
+  } catch {
+    say STDERR "(note: no pkg-config)\n";
+  };
+    
   my $cc = ExtUtils::CChecker->new( quiet => 1);
   my ($inc_found, $lib_found);
   $cc->push_extra_linker_flags('-lssl');
