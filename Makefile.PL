@@ -44,6 +44,14 @@ my $LDDLFLAGS = $Config{lddlflags};
 WriteMakefile(
   NAME => 'Neo4j::Client',
   VERSION_FROM => 'lib/Neo4j/Client.pm',
+  BUILD_REQUIRES => {
+    'ExtUtils::MakeMaker' => 0,
+  },
+  CONFIGURE_REQUIRES => {
+    'ExtUtils::CChecker' => 0,
+    'Try::Tiny' => 0,
+    'IPC::Run' => 0
+    },
   OBJECT => join(' ',@o_files),
   LDDLFLAGS => $LDDLFLAGS,
   LDFROM => join(' ', @o_files),
