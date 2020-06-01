@@ -37,6 +37,19 @@ my $LDDLFLAGS = $Config{lddlflags};
 
 WriteMakefile(
   NAME => 'Neo4j::Client',
+  MIN_PERL_VERSION => '5.010',
+  META_ADD => {
+    resources => {
+      repository => {
+	url => 'https://github.com/majensen/neoclient',
+	web => 'https://github.com/majensen/neoclient',
+	type => 'git'
+       },
+      bugtracker => {
+	web => 'https://github.com/majensen/neoclient/issues',
+      }
+     },
+  },
   ABSTRACT => 'Build and use the libneo4j-client library',
   AUTHOR => ['Mark A. Jensen (majensen -at- cpan -dot- org)'],
   VERSION_FROM => 'lib/Neo4j/Client.pm',
@@ -64,7 +77,6 @@ WriteMakefile(
     'lib/Neo4j/ClientLocal.pm' => '$(INST_LIB)/Neo4j/ClientLocal.pm',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
     "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
-    # "blib/arch/auto/Neo4j/Client/Client.\$(DLEXT)" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.\$(DLEXT)",    
     'bin/neoclient.pl' => '$(INST_SCRIPT)/neoclient.pl',
   },
   C => [grep /\.c$/, @src_files],
