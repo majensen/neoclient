@@ -125,6 +125,7 @@ sub _configure {
   my $CCFLAGS = join(' ', $tls_cc, $pthread{PTHREAD_CFLAGS});
   my $LIBS = join(' ', $tls_ld, $pthread{PTHREAD_LIBS});
   _neo4j_client_local($CCFLAGS, $LIBS);
+  $LIBS =~ s/-pthread//;
   return {
     CCFLAGS => $CCFLAGS,
     LIBS => $LIBS
