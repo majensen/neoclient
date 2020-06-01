@@ -37,7 +37,10 @@ my $LDDLFLAGS = $Config{lddlflags};
 
 WriteMakefile(
   NAME => 'Neo4j::Client',
+  ABSTRACT => 'Build and use the libneo4j-client library',
+  AUTHOR => ['Mark A. Jensen (majensen -at- cpan -dot- org)'],
   VERSION_FROM => 'lib/Neo4j/Client.pm',
+  LICENSE => 'apache_2_0',
   BUILD_REQUIRES => {
     'ExtUtils::MakeMaker' => 0,
     'Test::Exception' => 0,
@@ -61,7 +64,7 @@ WriteMakefile(
     'lib/Neo4j/ClientLocal.pm' => '$(INST_LIB)/Neo4j/ClientLocal.pm',
     'build/src/lib/neo4j-client.h' => '$(INST_ARCHLIB)/auto/Neo4j/Client/neo4j-client.h',
     "blib/arch/auto/Neo4j/Client/Client.a" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.a",
-    "blib/arch/auto/Neo4j/Client/Client.\$(DLEXT)" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.\$(DLEXT)",    
+    # "blib/arch/auto/Neo4j/Client/Client.\$(DLEXT)" => "\$(INST_ARCHLIB)/auto/Neo4j/Client/libClient.\$(DLEXT)",    
     'bin/neoclient.pl' => '$(INST_SCRIPT)/neoclient.pl',
   },
   C => [grep /\.c$/, @src_files],

@@ -1,3 +1,6 @@
+LICENSE
+Changes
+README.md
 bin/neoclient.pl
 build/aclocal.m4
 build/compile
@@ -94,5 +97,7 @@ build/src/lib/values.h
 lib/Neo4j/Client.pm
 t/001_mod.t
 t/002_script.t
+t/098_pod.t
+t/099_cpan_changes.t
 Makefile.PL
 MANIFEST			This list of files
