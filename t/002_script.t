@@ -15,7 +15,7 @@ like $out, qr/Usage/, 'usage note';
 
 ok(run([ $^X, '-Mblib', $script, '--lib' ],\$in,\$out,\$err),"--lib");
 like $out, qr{-L/}, "got some libs";
-ok(run([ $^X, '-Mblib', $script, '--inc' ],\$in,\$out,\$err),"--inc");
-like $out, qr{-I/},"got some incs";
+ok(run([ $^X, '-Mblib', $script, '--cc' ],\$in,\$out,\$err),"--cc");
+like $out, qr{-I/},"got some ccflags";
 
 done_testing;

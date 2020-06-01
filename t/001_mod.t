@@ -13,11 +13,8 @@ int rc=neo4j_client_init();
 printf( "%s\n", libneo4j_client_version());
 }
 TRY
-if ($Neo4j::Client::LIBS_SSL) {
-  $cc->push_extra_linker_flags( map { s{/lib/}{/arch/};$_ } Neo4j::Client::LIBS_SSL_ARY());
-}
 $cc->push_extra_linker_flags(map { s{/lib/}{/arch/};$_ } Neo4j::Client::LIBS_ARY());
-$cc->push_extra_compiler_flags(map { s{/lib/}{/arch/};$_ } Neo4j::Client::INC_ARY());
+$cc->push_extra_compiler_flags(map { s{/lib/}{/arch/};$_ } Neo4j::Client::CCFLAGS_ARY());
 ok $cc->try_compile_run( source => $tryc ), "Locations work and test pgm runs";
 
 
