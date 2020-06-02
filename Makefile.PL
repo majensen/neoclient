@@ -136,8 +136,11 @@ sub _configure {
       $pthread{PTHREAD_LIBS} = join(' ',$pthread{PTHREAD_LIBS},'-pthread');
     };
   }
+  my ($cflags) = grep /^CFLAGS=/,@log;
+  $cflags =~ s/^CFLAGS='//; $cflags =~ s/'\s*$//;
+  $cflags =~ s/\s+-W[a-zA-Z-_=]*//g;
   chdir '..';
-  my $CCFLAGS = join(' ', $tls_cc, $pthread{PTHREAD_CFLAGS});
+  my $CCFLAGS = join(' ', $tls_cc, $pthread{PTHREAD_CFLAGS}, $cflags);
   my $LIBS = join(' ', $tls_ld, $pthread{PTHREAD_LIBS});
   _neo4j_client_local($CCFLAGS, $LIBS);
   $LIBS =~ s/-pthread//;

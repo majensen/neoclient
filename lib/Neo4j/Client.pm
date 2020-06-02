@@ -1,5 +1,3 @@
-# has to provide: access to the lib
-#                 access to neo4j-client.h
 package Neo4j::Client;
 use Neo4j::ClientLocal;
 use Cwd qw/realpath/;
@@ -9,7 +7,7 @@ use File::Spec;
 use strict;
 use warnings;
 
-$Neo4j::Client::VERSION="0.1";
+$Neo4j::Client::VERSION="0.11";
 
 $Neo4j::Client::LIBS =
   join(' ', "-L".realpath(module_dir(__PACKAGE__))." -lClient",
@@ -30,9 +28,14 @@ Neo4j::Client - Build and use the libneo4j-client library
 
 =head1 SYNOPSIS
 
+ use ExtUtils::MakeMaker;
  use Neo4j::Client;
- $Neo4j::Client::LIBS;
- $Neo4j::Client::CCFLAGS;
+ 
+ WriteMakefile(
+   LIBS => join(' ',$YOURLIBS, $Neo4j::Client::LIBS),
+   CCFLAGS => join(' ',$YOURCCFLAGS, $Neo4j::Client::CCFLAGS),
+   ...
+ );
 
 =head1 DESCRIPTION
 
@@ -40,7 +43,12 @@ Chris Leishman's
 L<libneo4j-client|https://github.com/cleishm/libneo4j-client> is a C
 library for communication with a Neo4j (<v4.0) server via the Bolt
 protocol. Installing this module will attempt to build the (static)
-library on your machine for use with L<Neo4j::Bolt>.
+library on your machine (particularly for the use of L<Neo4j::Bolt>).
+
+Use the (fully qualified) C<$Neo4j::Client::LIBS> and C<$Neo4j::Client::CCFLAGS>
+to fold the library in to compilation and linking.
+
+The script C<neoclient.pl> will provide these on the command line.
 
 =head1 AUTHOR
 
