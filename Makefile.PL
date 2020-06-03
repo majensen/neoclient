@@ -44,7 +44,7 @@ my $LDDLFLAGS = $Config{lddlflags};
 WriteMakefile(
   NAME => 'Neo4j::Client',
   MIN_PERL_VERSION => '5.010',
-  META_ADD => {
+  META_MERGE => {
     resources => {
       repository => {
 	url => 'https://github.com/majensen/neoclient',
@@ -90,16 +90,6 @@ WriteMakefile(
   realclean => { FILES => ['a.out','config.h', 'build/config.h',@files,'lib/Neo4j/ClientTLS.pm'] },
  );
 
-# heads-up : real <TAB>s in FRAG below
-# sub MY::postambler {
-#   return <<'FRAG';
-# so_to_blib : pm_to_blib
-# 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV},'\''$(INST_LIB)/auto'\'')' -- \
-# 	  blib/arch/auto/Neo4j/Client/Client.$(DLEXT) \
-# 	  $(INST_ARCHLIB)/auto/Neo4j/Client/libClient.$(DLEXT)
-# 	$(NOECHO) $(TOUCH) so_to_blib
-# FRAG
-# }
 
 sub _configure {
   my ($in,$out,$err);
@@ -292,3 +282,20 @@ sub ExtUtils::CChecker::pop_include_dirs {
   pop @{$self->{include_dirs}};
 }
 
+package MY;
+# heads-up : real <TAB>s in FRAG below
+sub postamble {
+  return <<'FRAG';
+h_to_blib : pm_to_blib config.h
+	$(MKPATH) blib/arch/auto/Neo4j/Client/include/
+	$(CP) build/src/lib/*.h blib/arch/auto/Neo4j/Client/include/
+	$(CP) config.h blib/arch/auto/Neo4j/Client/include/
+	$(NOECHO) $(TOUCH) h_to_blib
+FRAG
+}
+
+sub top_targets {
+  my $orig = shift->SUPER::top_targets(@_);
+  $orig =~ s/linkext/linkext h_to_blib/;
+  return $orig;
+}

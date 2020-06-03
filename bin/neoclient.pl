@@ -6,13 +6,17 @@ use strict;
 use warnings;
 
 no warnings 'once';
-my ($libs, $ccflags);
+my ($libs, $ccflags, $dev);
 GetOptions(
   "libs|l" => \$libs,
   "cc|c" => \$ccflags,
+  "dev|d" => \$dev,
  ) or pod2usage(1);
 
-print join(' ', ($ccflags ? $Neo4j::Client::CCFLAGS : ()),
+!($libs || $ccflags || $dev) && pod2usage(0);
+
+print join(' ', ($ccflags ?
+		   ($dev ? $Neo4j::Client::CCFLAGS :$Neo4j::Client::CCFLAGS) : ()),
 	   ($libs ? $Neo4j::Client::LIBS : ()));
 1;
 
@@ -22,7 +26,7 @@ neoclient.pl - get compiler and linker options provided by Neo4j::Client
 
 =head1 SYNOPSIS
 
- $ neoclient.pl [--cc] [--libs]
+ $ neoclient.pl [--cc] [--libs] ( [--dev] )
  
  Print compiler and/or linker flags pointing to libneo4j-client and libssl to
  stdout
