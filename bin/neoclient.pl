@@ -29,7 +29,7 @@ neoclient.pl - get compiler and linker options provided by Neo4j::Client
 
 =head1 SEE ALSO
 
-L<Neo4j::Client>
+L<Neo4j::Client>, L<Neo4j::Bolt>
 
 =head1 AUTHOR
 

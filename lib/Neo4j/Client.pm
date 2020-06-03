@@ -7,7 +7,7 @@ use File::Spec;
 use strict;
 use warnings;
 
-$Neo4j::Client::VERSION="0.11";
+$Neo4j::Client::VERSION="0.12";
 
 $Neo4j::Client::LIBS =
   join(' ', "-L".realpath(module_dir(__PACKAGE__))." -lClient",
@@ -43,12 +43,18 @@ Chris Leishman's
 L<libneo4j-client|https://github.com/cleishm/libneo4j-client> is a C
 library for communication with a Neo4j (<v4.0) server via the Bolt
 protocol. Installing this module will attempt to build the (static)
-library on your machine (particularly for the use of L<Neo4j::Bolt>).
+library on your machine (particularly for the use of
+L<Neo4j::Bolt>). It will build with TLS support if OpenSSL
+libraries/includes are found.
 
 Use the (fully qualified) C<$Neo4j::Client::LIBS> and C<$Neo4j::Client::CCFLAGS>
 to fold the library in to compilation and linking.
 
 The script C<neoclient.pl> will provide these on the command line.
+
+=head1 SEE ALSO
+
+L<Neo4j::Bolt>.
 
 =head1 AUTHOR
 

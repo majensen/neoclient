@@ -13,10 +13,16 @@ use Carp qw/carp croak/;
 use strict;
 
 
+# Windoze alert
+if ($^O =~ /MSWin/) {
+  say "This package will not install in Windows natively.";
+  say "Try installing under Cygwin or MSys.";
+  exit 0;
+}
+
 my $libdir = File::Spec->catdir(qw/build src lib/);
 my @try_incdirs = ("", qw{/usr/include /usr/local/opt/openssl/include});
 my @try_libdirs = ("", qw{/usr/lib /usr/local/opt/openssl/lib});
-
 opendir my $src, $libdir;
 my @files = grep /\.[ch]$/, readdir $src;
 if (!(find_openssl(\@try_incdirs,\@try_libdirs)->[2])) { # remove openssl files
@@ -125,7 +131,7 @@ sub _configure {
     close($f);
   }
 
-  # Review config.log for threading info
+  # Review config.log for threading info and cflags
   open my $lf, "config.log" or croak "Where's the config.log?";
   my @log = <$lf>;
   my %pthread = map { chomp;my @a = split /=/; $a[1]=~s/'//g; @a } grep /PTHREAD_(?:CFLAGS|LIBS)/,@log;
