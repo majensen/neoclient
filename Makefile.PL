@@ -184,6 +184,7 @@ sub Lperl {
 sub find_openssl {
   my ($try_incdirs, $try_libdirs) = @_;
   state $ssl_flags;
+  state $cflags;
   return $ssl_flags if ($ssl_flags);
   say "Finding openssl";
   my ($in,$out,$err);
@@ -199,15 +200,21 @@ sub find_openssl {
       chomp $out;
       push @{$try_incdirs}, $out;
     }
+    if (run([qw/pkg-config --modversion openssl/],\$in,\$out,\$err)) {
+      print $out;
+      chomp $out;
+      $cflags = "-DHAVE_BIO_METH_NEW" if ($out =~ /^1.1/);
+    }
   } catch {
     $pkg_config = undef;
     say STDERR "(note: no pkg-config)\n";
   };
-    
+
   my $cc = ExtUtils::CChecker->new( quiet => 1);
   my ($inc_found, $lib_found);
   $cc->push_extra_linker_flags('-lssl');
   $cc->push_extra_linker_flags('-lcrypto');
+
   my $tryc =<<'TRY';
 #include <openssl/crypto.h>
 int main() {
@@ -245,12 +252,12 @@ TRY
   }
   if ($lib_found) {
     open(STDERR, ">&OLDERR");
-    return $ssl_flags = [join( ' ', @{$cc->extra_compiler_flags}),
+    return $ssl_flags = [join( ' ', @{$cc->extra_compiler_flags}, $cflags),
 	    join( ' ', @{$cc->extra_linker_flags}),
 	   $libd, $pkg_config];
   }
   open(STDERR, ">&OLDERR");  
-  return $ssl_flags = [undef,undef,undef,$pkg_config];
+  return $ssl_flags = [$cflags,undef,undef,$pkg_config];
 }
 
 # monkey patches for ExtUtils::CChecker
