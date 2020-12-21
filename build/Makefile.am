@@ -2,7 +2,6 @@ ACLOCAL_AMFLAGS = -I build-aux/m4
 SUBDIRS = lib
 
 if WANT_TOOLS
-SUBDIRS += shell
 endif
 
 EXTRA_DIST = \

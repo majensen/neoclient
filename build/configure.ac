@@ -222,29 +222,12 @@ AS_IF([test "X$GCC" = "Xyes"], [CFLAGS="$CFLAGS $GCC_CFLAGS"])
 
 
 dnl Check for doxygen support
-DX_HTML_FEATURE(ON)
-DX_CHM_FEATURE(OFF)
-DX_CHI_FEATURE(OFF)
-DX_MAN_FEATURE(ON)
-DX_RTF_FEATURE(OFF)
-DX_XML_FEATURE(OFF)
-DX_PDF_FEATURE(ON)
-DX_PS_FEATURE(OFF)
-DX_INIT_DOXYGEN(libneo4j-client, doxygen.cfg, .)
 
 AC_SUBST([REQUIRES], [`echo "$REQUIRES" | cut -c3-`])
 
 AC_CONFIG_FILES([
-    Makefile \
-    lib/Makefile \
-    lib/neo4j-client.pc \
-    lib/doc/Makefile
-    lib/src/Makefile \
-    lib/src/neo4j-client.h \
-    lib/test/Makefile \
-    shell/Makefile \
-    shell/doc/Makefile \
-    shell/doc/neo4j-client.1 \
-    shell/src/Makefile
+	Makefile \
+	lib/Makefile \
+	lib/src/Makefile \
 ])
 AC_OUTPUT

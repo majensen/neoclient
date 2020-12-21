@@ -87,11 +87,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@WANT_TOOLS_TRUE@am__append_1 = shell
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/build-aux/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/build-aux/m4/ax_pthread.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/build-aux/m4/ax_pthread.m4 \
 	$(top_srcdir)/build-aux/m4/ax_thread_local.m4 \
 	$(top_srcdir)/build-aux/m4/codeset.m4 \
 	$(top_srcdir)/build-aux/m4/declare_versions.m4 \
@@ -171,7 +169,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
-DIST_SUBDIRS = lib shell
+DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/build-aux/compile \
 	$(top_srcdir)/build-aux/config.guess \
@@ -180,8 +178,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/missing build-aux/compile \
 	build-aux/config.guess build-aux/config.sub build-aux/depcomp \
-	build-aux/install-sh build-aux/ltmain.sh build-aux/missing \
-	compile depcomp ltmain.sh
+	build-aux/install-sh build-aux/ltmain.sh build-aux/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -245,32 +242,8 @@ CYPHER_PARSER_LIBS = @CYPHER_PARSER_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
-DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
-DX_CONFIG = @DX_CONFIG@
-DX_DOCDIR = @DX_DOCDIR@
-DX_DOT = @DX_DOT@
-DX_DOXYGEN = @DX_DOXYGEN@
-DX_DVIPS = @DX_DVIPS@
-DX_EGREP = @DX_EGREP@
-DX_ENV = @DX_ENV@
-DX_FLAG_chi = @DX_FLAG_chi@
-DX_FLAG_chm = @DX_FLAG_chm@
-DX_FLAG_doc = @DX_FLAG_doc@
-DX_FLAG_dot = @DX_FLAG_dot@
-DX_FLAG_html = @DX_FLAG_html@
-DX_FLAG_man = @DX_FLAG_man@
-DX_FLAG_pdf = @DX_FLAG_pdf@
-DX_FLAG_ps = @DX_FLAG_ps@
-DX_FLAG_rtf = @DX_FLAG_rtf@
-DX_FLAG_xml = @DX_FLAG_xml@
-DX_HHC = @DX_HHC@
-DX_LATEX = @DX_LATEX@
-DX_MAKEINDEX = @DX_MAKEINDEX@
-DX_PDFLATEX = @DX_PDFLATEX@
-DX_PERL = @DX_PERL@
-DX_PROJECT = @DX_PROJECT@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
@@ -387,7 +360,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I build-aux/m4
-SUBDIRS = lib $(am__append_1)
+SUBDIRS = lib
 EXTRA_DIST = \
 	build-aux \
 	LICENSE \
