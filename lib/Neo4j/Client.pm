@@ -7,7 +7,7 @@ use File::Spec;
 use strict;
 use warnings;
 
-$Neo4j::Client::VERSION="0.20";
+$Neo4j::Client::VERSION="0.21";
 
 $Neo4j::Client::LIBS =
   join(' ', "-L".realpath(module_dir(__PACKAGE__))." -lClient",
