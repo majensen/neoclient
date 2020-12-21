@@ -30,7 +30,9 @@ build/build-aux/m4/prog_cc_c11.m4
 build/build-aux/m4/static_assert.m4  
 build/build-aux/m4/type_socklen_t.m4 
 build/build-aux/m4/with_libs.m4      
-build/build-aux/missing              
+build/build-aux/missing
+build/lib/Makefile.ac
+build/lib/Makefile.in
 build/lib/src/atomic.h
 build/lib/src/buffering_iostream.c
 build/lib/src/buffering_iostream.h
