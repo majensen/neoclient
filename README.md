@@ -17,7 +17,7 @@ Neo4j::Client - Build and use the libneo4j-client library
 
 Chris Leishman's
 [libneo4j-client](https://github.com/cleishm/libneo4j-client) is a C
-library for communication with a Neo4j (&lt;v4.0) server via the Bolt
+library for communication with a Neo4j server via the Bolt
 protocol. 
 
 Installing this module will attempt to build the API portion of the
