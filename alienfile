@@ -1,0 +1,71 @@
+#-*-cperl-*-
+use alienfile;
+use File::Spec;
+use Data::Dumper qw/Dumper/;
+use Alien::OpenSSL;
+
+meta_prop->{env}->{OPENSSL_LIBS} = Alien::OpenSSL->libs;
+meta_prop->{env}->{OPENSSL_CFLAGS} = Alien::OpenSSL->cflags;
+my ($ssl_ver) = Alien::OpenSSL->version =~ /^([0-9]\.[0-9])/;
+meta_prop->{env}->{CFLAGS} = "-DHAVE_BIO_METH_NEW" if 0+$ssl_ver > 1.0;
+probe sub { 'share' };
+share {
+  plugin 'Build::Autoconf';
+  start_url 'build';
+  plugin 'Fetch::LocalDir';
+  plugin 'Extract::Directory';
+  build [
+    '%{configure} --disable-tools',
+    '%{make}',
+    '%{make} install',
+   ];
+  gather sub {
+    my ($bld) = @_;
+    my ($dev_cflags, $pt_cflags, $pt_libs) = scan_config_log($bld);
+    my $pfx = $bld->runtime_prop->{prefix};
+    $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/dynamic", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
+    $bld->runtime_prop->{libs_static} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
+    $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", "-iquote${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
+    $bld->runtime_prop->{dev_cflags} = $dev_cflags;
+  };
+};
+plugin "Gather::IsolateDynamic";
+
+
+sub scan_config_log {
+  my ($bld) = @_;
+  log("Scanning config.log for flags");
+  log(Dumper($bld->meta_prop));
+  log(Dumper($bld->install_prop));
+  my $lfn;
+  for (qw/root extract stage/) {
+    if (! -d $bld->install_prop->{$_}) {
+      log("$_ dir is gone!!");
+    }
+    else {
+      $lfn = File::Spec->catfile($bld->install_prop->{$_},"config.log");
+      if (-e $lfn) {
+	log("Found config.log in $_ dir");
+	last;
+      }
+    }
+  }
+  unless ($lfn) {
+    log("Can't find the config.log"); return ("", "");
+  }
+  open my $lf,$lfn or die "What?";
+  my @log = <$lf>;
+  my %pthread = map { chomp;my @a = split /=/; $a[1]=~s/'//g; @a } grep /PTHREAD_(?:CFLAGS|LIBS)/,@log;
+  if (%pthread) {
+    ($pthread{PTHREAD_CFLAGS} =~ /-pthread/) && do {
+      # put -pthread in linker flags, or CBuilder won't see it for some reason
+      $pthread{PTHREAD_CFLAGS} =~ s/-pthread//;
+      # $pthread{PTHREAD_LIBS} = join(' ',$pthread{PTHREAD_LIBS},'-pthread');
+    };
+  }
+  my ($cflags) = grep /^CFLAGS=/,@log;
+  $cflags =~ s/^CFLAGS='//; $cflags =~ s/'\s*$//;
+  $cflags =~ s/\s+-W[a-zA-Z-_=]*//g;
+  return $cflags, $pthread{PTHREAD_CFLAGS}, $pthread{PTHREAD_LIBS};
+}
+  
