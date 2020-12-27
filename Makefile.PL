@@ -22,6 +22,7 @@ WriteMakefile($mm->mm_args(
   },
   PREREQ_PM => {
     'Alien::Base' => 0,
+    'Alien::OpenSSL' => 0,
   }
  ));
 
