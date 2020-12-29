@@ -1,11 +1,6 @@
 alienfile
 build/aclocal.m4
 build/autogen.sh
-build/autom4te.cache/output.0
-build/autom4te.cache/output.1
-build/autom4te.cache/requests
-build/autom4te.cache/traces.0
-build/autom4te.cache/traces.1
 build/build-aux/automake/doxygen.am
 build/build-aux/build-debian.dockerfile
 build/build-aux/build-ubuntu.dockerfile
@@ -39,7 +34,6 @@ build/build-aux/valgrind.suppressions
 build/config.h.in
 build/configure
 build/configure.ac
-build/lib/Makefile
 build/lib/Makefile.am
 build/lib/Makefile.in
 build/lib/src/atomic.h
@@ -61,7 +55,6 @@ build/lib/src/iostream.h
 build/lib/src/job.h
 build/lib/src/logging.c
 build/lib/src/logging.h
-build/lib/src/Makefile
 build/lib/src/Makefile.am
 build/lib/src/Makefile.in
 build/lib/src/memory.c
@@ -105,11 +98,8 @@ build/lib/src/util.c
 build/lib/src/util.h
 build/lib/src/values.c
 build/lib/src/values.h
-build/libtool
-build/Makefile
 build/Makefile.am
 build/Makefile.in
-build/stamp-h1
 Changes
 lib/Neo4j/Client.md
 lib/Neo4j/Client.pm

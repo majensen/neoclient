@@ -2,11 +2,9 @@
 use alienfile;
 use Env qw/@PATH @AC_PATH/;
 use File::Spec;
-use Data::Dumper qw/Dumper/;
 use Alien::OpenSSL;
 use Alien::Build::CommandSequence;
 
-our %TOOLS;
 meta_prop->{env}->{OPENSSL_LIBS} = Alien::OpenSSL->libs;
 meta_prop->{env}->{OPENSSL_CFLAGS} = Alien::OpenSSL->cflags;
 my ($ssl_ver) = Alien::OpenSSL->version =~ /^([0-9]\.[0-9])/;
@@ -51,13 +49,6 @@ meta->around_hook(
        )->execute($bld);
       eval 'require tool::AM';
     };
-    log("Trying to set tools");
-    $TOOLS{AMDIR} =  tool::AM->bin_dir;
-    $TOOLS{ACDIR} = tool::AC->bin_dir;
-    $TOOLS{AUTOCONF}  = Path::Tiny->new(tool::AC->bin_dir,'autoconf')->stringify;
-    $TOOLS{AUTOMAKE} = 
-    $TOOLS{ACLOCAL} = Path::Tiny->new(tool::AM->bin_dir,'aclocal-1.16')->stringify;
-    log(Dumper(\@PATH));
     $pb->($bld,@_);
   });
 
@@ -75,7 +66,6 @@ share sub {
   meta_prop->{env}->{AUTOMAKE} = Path::Tiny->new(eval'tool::AM->bin_dir','automake')->stringify;
   meta_prop->{env}->{ACLOCAL} = Path::Tiny->new(eval'tool::AM->bin_dir','aclocal-1.16')->stringify;
   unshift @PATH, Path::Tiny->new(eval'tool::AC->bin_dir'," ")->stringify, Path::Tiny->new(eval'tool::AM->bin_dir'," ")->stringify;
-  unshift @AC_PATH, $TOOLS{AMDIR};
   plugin 'Build::Autoconf';
   start_url 'build';
   plugin 'Fetch::LocalDir';

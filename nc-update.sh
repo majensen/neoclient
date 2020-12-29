@@ -9,7 +9,7 @@ LIBNEO4J_CLIENT=${1:-}
 : ${LIBNEO4J_CLIENT:=libneo4j-client}
 
 mkdir -p build/lib/src 2> /dev/null
-cp -aR $LIBNEO4J_CLIENT/build-aux build/build-aux
+cp -aR $LIBNEO4J_CLIENT/build-aux build
 echo "SUBDIRS = src" > build/lib/Makefile.am
 for f in $NCFILES
 do
@@ -21,7 +21,7 @@ do
 done
 pushd build
 sed -ie "/SUBDIRS.*shell/d" Makefile.am
-sed -ie "/hidden/s/-fvisibility=hidden//" configure.ac
+sed -ie "/hidden/s/-fvisibility=hidden//;/warning-option/s/-Wno-unknown-warning-option//" configure.ac
 sed -e "/^DX/d;/AC_CONFIG_FILES/q" configure.ac > cac
 cat <<EOF >> cac
 	Makefile \\
@@ -39,5 +39,8 @@ include_HEADERS = neo4j-client.h atomic.h buffering_iostream.h chunking_iostream
 " Makefile.am
 popd
 pushd build
+rm *.ame *.ace lib/src/*.ame
 ./autogen.sh
+automake
+rm -rf autom4te.cache
 popd
