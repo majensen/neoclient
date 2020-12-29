@@ -1,14 +1,58 @@
 #-*-cperl-*-
 use alienfile;
+use Env qw/@PATH @AC_PATH/;
 use File::Spec;
-use Data::Dumper qw/Dumper/;
 use Alien::OpenSSL;
+use Alien::Build::CommandSequence;
 
 meta_prop->{env}->{OPENSSL_LIBS} = Alien::OpenSSL->libs;
 meta_prop->{env}->{OPENSSL_CFLAGS} = Alien::OpenSSL->cflags;
 my ($ssl_ver) = Alien::OpenSSL->version =~ /^([0-9]\.[0-9])/;
 meta_prop->{env}->{CFLAGS} = "-DHAVE_BIO_METH_NEW" if 0+$ssl_ver > 1.0;
-probe sub { 'share' };
+
+probe sub {
+  my ($bld) = @_;
+  # abusing probe to (maybe) build a local set of autotools that work for this library
+  
+  my $pwd = Path::Tiny->new($bld->install_prop->{root})->parent;
+  eval 'require tool::M4; 1' or do {
+    my $m4d = $pwd->child(qw/tools m4/);
+    Alien::Build::CommandSequence->new(
+      "cd $m4d",
+      "$^X Makefile.PL",
+      "make install",
+      "make realclean"
+     )->execute($bld);
+    require tool::M4;
+  };
+  unshift @PATH, tool::M4->bin_dir;
+  
+  eval 'require tool::AC; 1' or do {
+    my $acd = $pwd->child(qw/tools ac/);
+    Alien::Build::CommandSequence->new(
+      "cd $acd",
+      "$^X Makefile.PL",
+      "make install",
+      "make realclean"
+     )->execute($bld);
+    require tool::AC;
+  };
+  unshift @PATH, tool::AC->bin_dir;
+  
+  eval 'require tool::AM; 1' or do {
+    my $amd = $pwd->child(qw/tools am/);
+    Alien::Build::CommandSequence->new(
+      "cd $amd",
+      "$^X Makefile.PL",
+      "make install",
+      "make realclean"
+     )->execute($bld);
+    require tool::AM;
+  };
+  unshift @PATH, tool::AM->bin_dir;
+  unshift @AC_PATH, tool::AM->bin_dir;
+  'share';
+};
 share {
   plugin 'Build::Autoconf';
   start_url 'build';
@@ -35,8 +79,6 @@ plugin "Gather::IsolateDynamic";
 sub scan_config_log {
   my ($bld) = @_;
   log("Scanning config.log for flags");
-  log(Dumper($bld->meta_prop));
-  log(Dumper($bld->install_prop));
   my $lfn;
   for (qw/root extract stage/) {
     if (! -d $bld->install_prop->{$_}) {

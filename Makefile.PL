@@ -12,17 +12,40 @@ WriteMakefile($mm->mm_args(
   LICENSE => 'apache_2_0',
   CONFIGURE_REQUIRES => {
     'Alien::Build::MM' => 0,
+    'Alien::OpenSSL' => 0,
+    'Path::Tiny' => 0,
+    'Env' => 0,
+    'Capture::Tiny' => 0,
+    'File::Which' => 0,
   },
   BUILD_REQUIRES => {
-    'Alien::OpenSSL' => 0,
   },
   TEST_REQUIRES => {
     'Test2::V0' => 0,
     'Test::Alien' => 0,
   },
   PREREQ_PM => {
-    'Alien::Base' => 0,
+    'Alien::Build' => 0,
     'Alien::OpenSSL' => 0,
+    'Path::Tiny' => 0,
+    'Env' => 0,
+    'Capture::Tiny' => 0,
+    'File::Which' => 0,
+  },
+  META_MERGE => {
+    resources => {
+      bugtracker => {
+	web => 'https://github.com/majensen/neoclient/issues',
+      },
+      repository => {
+	type => 'git',
+	url => 'https://github.com/majensen/neoclient.git',
+       },
+    },
+    x_contributors => [
+      "Mark A. Jensen <majensen@cpan.org>",
+      "Mohawk (ETJ)"
+     ]
   }
  ));
 
