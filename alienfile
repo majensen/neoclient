@@ -2,58 +2,80 @@
 use alienfile;
 use Env qw/@PATH @AC_PATH/;
 use File::Spec;
+use Data::Dumper qw/Dumper/;
 use Alien::OpenSSL;
 use Alien::Build::CommandSequence;
 
+our %TOOLS;
 meta_prop->{env}->{OPENSSL_LIBS} = Alien::OpenSSL->libs;
 meta_prop->{env}->{OPENSSL_CFLAGS} = Alien::OpenSSL->cflags;
 my ($ssl_ver) = Alien::OpenSSL->version =~ /^([0-9]\.[0-9])/;
 meta_prop->{env}->{CFLAGS} = "-DHAVE_BIO_METH_NEW" if 0+$ssl_ver > 1.0;
 
-probe sub {
-  my ($bld) = @_;
-  # abusing probe to (maybe) build a local set of autotools that work for this library
-  
-  my $pwd = Path::Tiny->new($bld->install_prop->{root})->parent;
-  eval 'require tool::M4; 1' or do {
-    my $m4d = $pwd->child(qw/tools m4/);
-    Alien::Build::CommandSequence->new(
-      "cd $m4d",
-      "$^X Makefile.PL",
-      "make install",
-      "make realclean"
-     )->execute($bld);
-    require tool::M4;
-  };
-  unshift @PATH, tool::M4->bin_dir;
-  
-  eval 'require tool::AC; 1' or do {
-    my $acd = $pwd->child(qw/tools ac/);
-    Alien::Build::CommandSequence->new(
-      "cd $acd",
-      "$^X Makefile.PL",
-      "make install",
-      "make realclean"
-     )->execute($bld);
-    require tool::AC;
-  };
-  unshift @PATH, tool::AC->bin_dir;
-  
-  eval 'require tool::AM; 1' or do {
-    my $amd = $pwd->child(qw/tools am/);
-    Alien::Build::CommandSequence->new(
-      "cd $amd",
-      "$^X Makefile.PL",
-      "make install",
-      "make realclean"
-     )->execute($bld);
-    require tool::AM;
-  };
-  unshift @PATH, tool::AM->bin_dir;
-  unshift @AC_PATH, tool::AM->bin_dir;
-  'share';
-};
-share {
+meta->around_hook(
+  probe => sub {
+    my $pb = shift;
+    my $bld = shift;
+    my $pwd = Path::Tiny->new($bld->install_prop->{root})->parent;
+    eval 'require tool::M4; 1' or do {
+      my $m4d = $pwd->child(qw/tools m4/);
+      Alien::Build::CommandSequence->new(
+	"cd $m4d",
+	"$^X Makefile.PL",
+	"make install",
+	"make realclean"
+       )->execute($bld);
+      eval 'require tool::M4';
+    };
+    unshift @PATH, tool::M4->bin_dir;
+    
+    eval 'require tool::AC; 1' or do {
+      my $acd = $pwd->child(qw/tools ac/);
+      Alien::Build::CommandSequence->new(
+	"cd $acd",
+	"$^X Makefile.PL",
+	"make install",
+	"make realclean"
+       )->execute($bld);
+      eval 'require tool::AC';
+    };
+    unshift @PATH, tool::AC->bin_dir;
+    
+    eval 'require tool::AM; 1' or do {
+      my $amd = $pwd->child(qw/tools am/);
+      Alien::Build::CommandSequence->new(
+	"cd $amd",
+	"$^X Makefile.PL",
+	"make install",
+	"make realclean"
+       )->execute($bld);
+      eval 'require tool::AM';
+    };
+    log("Trying to set tools");
+    $TOOLS{AMDIR} =  tool::AM->bin_dir;
+    $TOOLS{ACDIR} = tool::AC->bin_dir;
+    $TOOLS{AUTOCONF}  = Path::Tiny->new(tool::AC->bin_dir,'autoconf')->stringify;
+    $TOOLS{AUTOMAKE} = 
+    $TOOLS{ACLOCAL} = Path::Tiny->new(tool::AM->bin_dir,'aclocal-1.16')->stringify;
+    log(Dumper(\@PATH));
+    $pb->($bld,@_);
+  });
+
+probe sub { 'share' };
+share sub {
+  # probe is run in the Makefile, so the tool::XX will get made at configure time
+  # but the following is a build-time requirement - the tools may not exist when
+  # alienfile is compiled
+  requires 'tool::AC';
+  requires 'tool::AM';
+  # these will be loaded by Alien::Build at build time
+  # but in the meantime (at config, perl Makefile.PL), need to hide the calls from the complier,
+  # so we put them in evals...
+  meta_prop->{env}->{AUTOCONF} = Path::Tiny->new(eval'tool::AC->bin_dir','autoconf')->stringify;
+  meta_prop->{env}->{AUTOMAKE} = Path::Tiny->new(eval'tool::AM->bin_dir','automake')->stringify;
+  meta_prop->{env}->{ACLOCAL} = Path::Tiny->new(eval'tool::AM->bin_dir','aclocal-1.16')->stringify;
+  unshift @PATH, Path::Tiny->new(eval'tool::AC->bin_dir'," ")->stringify, Path::Tiny->new(eval'tool::AM->bin_dir'," ")->stringify;
+  unshift @AC_PATH, $TOOLS{AMDIR};
   plugin 'Build::Autoconf';
   start_url 'build';
   plugin 'Fetch::LocalDir';
