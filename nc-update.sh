@@ -21,7 +21,7 @@ do
 done
 pushd build
 sed -ie "/SUBDIRS.*shell/d" Makefile.am
-sed -ie "/hidden/s/-fvisibility=hidden//;/warning-option/s/-Wno-unknown-warning-option//" configure.ac
+sed -ie "/hidden/s/-fvisibility=hidden//;/warning-option/s/-Wno-unknown-warning-option//;/stringop-truncation/s/-W.*stringop-truncation//" configure.ac
 sed -e "/^DX/d;/AC_CONFIG_FILES/q" configure.ac > cac
 cat <<EOF >> cac
 	Makefile \\

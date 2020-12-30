@@ -3093,7 +3093,7 @@ GCC_CFLAGS=" -pipe -Wall -W -Wno-unused-parameter \
     -Wno-missing-field-initializers -Wpointer-arith -Wstrict-prototypes \
     -Wcast-qual -Wcast-align -Wno-error=unused-function \
     -Wno-error=unused-variable -Wno-error=deprecated-declarations \
-    -Wno-error=stringop-truncation "
+     "
 
 # Check whether --enable-werror was given.
 if test "${enable_werror+set}" = set; then :
