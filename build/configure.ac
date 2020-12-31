@@ -138,15 +138,13 @@ AC_CHECK_FUNCS([readpassphrase],[],[])
 
 AC_CHECK_FUNCS([memset_s],[],[])
 
-AC_CHECK_DECL([SO_NOSIGPIPE],[AC_DEFINE([HAVE_SO_NOSIGPIPE],[1],
-  [Define to 1 if you have SO_NOSIGPIPE in the <sys/socket.h> header file.])],
+AC_CHECK_DECL([SO_NOSIGPIPE],[],
   [],
   [
 #include <sys/socket.h>
   ])
 
-AC_CHECK_DECL([MSG_NOSIGNAL],[AC_DEFINE([HAVE_MSG_NOSIGNAL],[1],
-  [Define to 1 if you have MSG_NOSIGNAL in the <sys/socket.h> header file.])],
+AC_CHECK_DECL([MSG_NOSIGNAL],[],
   [],
   [
 #include <sys/socket.h>

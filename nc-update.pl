@@ -8,6 +8,7 @@ use IPC::Run qw/run/;
 use strict;
 use warnings;
 
+our $VERSION='0.42';
 =head1 NAME
 
 nc-update.pl - Subset libneo4j-client for neoclient
@@ -176,9 +177,11 @@ $tgt->edit_lines(
 ## Configure
 
 say "create new lib/Makefile.am";
-$build->child('lib','Makefile.am')->exists or
-  $build->child('lib','Makefile.am')->touch
-  ->edit_lines(sub{ $_ = "SUBDIRS = src\n" }) unless $dryrun;
+$build->child('lib','Makefile.am')->exists or do {
+  my $mamf =   $build->child('lib','Makefile.am')->filehandle(">");
+  print $mamf "SUBDIRS = src\n";
+  close($mamf);
+};
 
 say "chmod autogen.sh";
 $build->child('autogen.sh')->chmod(0755) unless $dryrun;

@@ -1,0 +1,8 @@
+Makefile.am
+autogen.sh
+configure.ac
+lib/src/Makefile.am
+lib/src/*.c
+lib/src/*.h
+lib/src/*.in
+build-aux
