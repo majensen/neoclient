@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 our $VERSION='0.42';
+
 =head1 NAME
 
 nc-update.pl - Subset libneo4j-client for neoclient
@@ -118,7 +119,7 @@ $tgt->edit_lines(sub{ /SUBDIRS.*shell/ and $_="" }) unless $dryrun;
 
 $tgt = $build->child('configure.ac');
 say "update $tgt";
-do {
+!$dryrun && do {
     $tgt->edit_lines(
       sub{
 	/hidden/ && s/-fvisibility=hidden//;
@@ -141,7 +142,7 @@ do {
 ])
 AC_OUTPUT
 EOF
-  } unless $dryrun;
+    };
 
 $tgt->edit_lines(
   sub{
@@ -163,7 +164,7 @@ $tgt->edit_lines(
       s/\Q[AC_DEFINE([HAVE_MSG_NOSIGNAL],[1],\E/[],/;
       $mns=1;
     };
-  });
+  }) unless $dryrun;
 
 
 $tgt = $build->child(qw/lib src Makefile.am/);
@@ -177,11 +178,11 @@ $tgt->edit_lines(
 ## Configure
 
 say "create new lib/Makefile.am";
-$build->child('lib','Makefile.am')->exists or do {
+$build->child('lib','Makefile.am')->exists or (!$dryrun && do {
   my $mamf =   $build->child('lib','Makefile.am')->filehandle(">");
   print $mamf "SUBDIRS = src\n";
   close($mamf);
-};
+});
 
 say "chmod autogen.sh";
 $build->child('autogen.sh')->chmod(0755) unless $dryrun;
