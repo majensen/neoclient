@@ -72,7 +72,7 @@ share sub {
   plugin 'Fetch::LocalDir';
   plugin 'Extract::Directory';
   build [
-    '%{configure} --disable-tools',
+    '%{configure} --disable-tools --disable-werror',
     '%{make}',
     '%{make} install',
    ];
