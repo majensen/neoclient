@@ -1,3 +1,3 @@
-[submodule "libneo4j-client"]
-	path = libneo4j-client
-	url = https://github.com/majensen/libneo4j-client
+[submodule "libneo4j-omni"]
+	path = libneo4j-omni
+	url = https://github.com/majensen/libneo4j-omni.git

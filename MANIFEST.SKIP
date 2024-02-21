@@ -9,7 +9,7 @@
 .git/.*
 .gitmodules
 _alien/.*
-libneo4j-client/.*
+libneo4j-omni/.*
 \/blib\/
 try/.*
 Neo4j-Client.*tar.gz

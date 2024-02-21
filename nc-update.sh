@@ -1,12 +1,12 @@
 #!/bin/bash
 set -euo pipefail
-# update Neo4j::Client build directory from libneo4j-client
+# update Neo4j::Client build directory from libneo4j-omni
 # run in top-level of work tree or run with working dir as arg 1
 NCFILES="Makefile.am autogen.sh configure.ac"
 #LIBFILES="Makefile.am neo4j-client.pc.in"
 LIBSRCFILES="Makefile.am *.c *.h *.in"
 LIBNEO4J_CLIENT=${1:-}
-: ${LIBNEO4J_CLIENT:=libneo4j-client}
+: ${LIBNEO4J_CLIENT:=libneo4j-omni}
 
 mkdir -p build/lib/src 2> /dev/null
 cp -aR $LIBNEO4J_CLIENT/build-aux build

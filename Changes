@@ -1,4 +1,7 @@
 Revision history for Perl module Neo4j::Client
+0.53 2024-02-21
+     - switch to majensen/libneo4j-omni (fork from cleishm/libneo4j-client)
+       (v5.0.3)
 0.52 2023-04-15
      - update to latest majensen/libneo4j-client (fork from cleishm/libneo4j-client)
        (v5.0.2-maj-beta)

@@ -3,11 +3,11 @@ use strict;
 use warnings;
 use base qw( Alien::Base );
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 =head1 NAME
 
-Neo4j::Client - Build and use the libneo4j-client library
+Neo4j::Client - Build and use the libneo4j-omni library
 
 =head1 SYNOPSIS
 
@@ -25,15 +25,15 @@ Neo4j::Client - Build and use the libneo4j-client library
 Chris Leishman's
 L<libneo4j-client|https://github.com/cleishm/libneo4j-client> is a C
 library for communication with a Neo4j server via the Bolt
-protocol. A fork at L<https://github.com/majensen/libneo4j-client> enables
-the library to run on Neo4j versions up through 5.0.x.
+protocol. A fork at L<https://github.com/majensen/libneo4j-omni> enables
+the library to run on Neo4j versions up through 5.x.
 
 Installing this module will attempt to build the API portion of the
-library on your machine. C<libneo4j-client>'s interactive shell and
+library on your machine. C<libneo4j-omni>'s interactive shell and
 documentation are not built. The install process will use the GNU
 autotools C<autoconf-2.69>, C<automake-1.16.3>, and C<m4-1.4.18-patched>
 which are bundled with this distro and are known to work on this library.
-(These are required to build from ./configure for C<libneo4j-client>.)
+(These are required to build from ./configure for C<libneo4j-omni>.)
 
 Thanks to the miracle of L<Alien::Build>, the library should always
 contain OpenSSL support.
@@ -54,7 +54,7 @@ Thanks L<ETJ|https://metacpan.org/author/ETJ> (a.k.a mohawk) for beaming me aboa
 
 =head1 LICENSE
 
-This packaging software is Copyright (c) 2023 by Mark A. Jensen.
+This packaging software is Copyright (c) 2024 by Mark A. Jensen.
 
 This is free software, licensed under:
 
