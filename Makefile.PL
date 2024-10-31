@@ -4,7 +4,7 @@ use Alien::Build::MM;
 my $mm = Alien::Build::MM->new;
 
 WriteMakefile($mm->mm_args(
-  ABSTRACT => 'Build and use the libneo4j-client library',
+  ABSTRACT => 'Build and use the libneo4j-omni library',
   AUTHOR => ['Mark A. Jensen (majensen -at- cpan -dot- org)'],
   DISTNAME => 'Neo4j-Client',
   NAME => 'Neo4j::Client',
@@ -33,6 +33,8 @@ WriteMakefile($mm->mm_args(
     'File::Which' => 0,
   },
   META_MERGE => {
+    'meta-spec' => { version => 2 },
+    release_status => 'testing',
     resources => {
       bugtracker => {
 	web => 'https://github.com/majensen/neoclient/issues',

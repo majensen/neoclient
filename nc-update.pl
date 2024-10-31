@@ -12,24 +12,24 @@ our $VERSION='0.42';
 
 =head1 NAME
 
-nc-update.pl - Subset libneo4j-client for neoclient
+nc-update.pl - Subset libneo4j-omni for neoclient
 
 =head1 SYNOPSIS
 
  Usage: nc-update.pl [--dry-run] [--force] 
    [--manifest <mani-of-desired-files-and-dirs>]
    [--libneo <lib-nc top-level dir>] [<top-level-dir>]
- Read from libneo4j-client repo directory; place filtered code in
+ Read from libneo4j-omni repo directory; place filtered code in
  build subdirectory
 
  Defaults:
    --manifest:      ./NC-MANIFEST
-   --libneo:        ./libneo4j-client/
+   --libneo:        ./libneo4j-omni/
    <top-level-dir>  .
 
 =head1 DESCRIPTION
 
-Create code subset of libneo4j-client for neoclient Rewrite some
+Create code subset of libneo4j-omni for neoclient Rewrite some
 configuration details to enable access to internal functions and to
 remove troublesome settings.  Pull only code needed for the library,
 not the shell.
@@ -47,7 +47,7 @@ GetOptions( "force" => \$force,
 	   )
   or pod2usage(2);
 
-$libneo //= "libneo4j-client";
+$libneo //= "libneo4j-omni";
 $manif //= "NC-MANIFEST";
 
 my $cwd = cwd;
