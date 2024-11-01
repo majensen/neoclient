@@ -34,7 +34,6 @@ WriteMakefile($mm->mm_args(
   },
   META_MERGE => {
     'meta-spec' => { version => 2 },
-    release_status => 'testing',
     resources => {
       bugtracker => {
 	web => 'https://github.com/majensen/neoclient/issues',
