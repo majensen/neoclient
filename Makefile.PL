@@ -47,7 +47,10 @@ WriteMakefile($mm->mm_args(
     x_contributors => [
       'Mohawk (ETJ)'
      ]
-  }
+  },
+  dist => {
+    TAR => 'ptar',  # avoid extended headers in tarball
+  },
  ));
 
 sub MY::postamble {
