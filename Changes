@@ -1,6 +1,6 @@
 Revision history for Perl module Neo4j::Client
 
-0.55  2025-10-17 TRIAL RELEASE
+0.55  2025-10-19
     - Update libneo4j-omni to version 5.0.7, comprising the following changes:
         - Change the preferred Bolt v4 version from 4.0 to 4.4
         - Fix bug causing a Bolt protocol violation when using certain temporal
