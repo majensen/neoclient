@@ -78,7 +78,7 @@ share sub {
    ];
   gather sub {
     my ($bld) = @_;
-    my ($dev_cflags, $pt_cflags, $pt_libs) = scan_config_log($bld);
+    my ($dev_cflags, $pt_cflags, $pt_libs, $version) = scan_config_log($bld);
     my $pfx = $bld->runtime_prop->{prefix};
 
     # We're using static libs for this 'share' install because that's more
@@ -93,6 +93,7 @@ share sub {
     $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
 
     $bld->runtime_prop->{dev_cflags} = $dev_cflags;
+    $bld->runtime_prop->{version} = $version;
   };
 };
 plugin "Gather::IsolateDynamic";
@@ -130,6 +131,8 @@ sub scan_config_log {
   my ($cflags) = grep /^CFLAGS=/,@log;
   $cflags =~ s/^CFLAGS='//; $cflags =~ s/'\s*$//;
   $cflags =~ s/\s+-W[a-zA-Z-_=]*//g;
-  return $cflags, $pthread{PTHREAD_CFLAGS}, $pthread{PTHREAD_LIBS};
+  my ($version) = grep /^PACKAGE_VERSION=/,@log;
+  $version =~ s/.*?'(.*)'.*/$1/s if $version;
+  return $cflags, $pthread{PTHREAD_CFLAGS}, $pthread{PTHREAD_LIBS}, $version;
 }
   
