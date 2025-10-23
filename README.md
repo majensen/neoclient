@@ -4,14 +4,25 @@ Neo4j::Client - Build and use the libneo4j-omni library
 
 # SYNOPSIS
 
-    use ExtUtils::MakeMaker;
-    use Neo4j::Client;
-    
+With [Alien::Base::Wrapper](https://metacpan.org/pod/Alien::Base::Wrapper) for [perlxs](https://metacpan.org/pod/perlxs):
+
+    use Alien::Base::Wrapper 1.98 qw( WriteMakefile );
+
     WriteMakefile(
-      LIBS => Neo4j::Client->libs,
-      CCFLAGS => Neo4j::Client->cflags,
+      alien_requires => [ 'Neo4j::Client', 'Alien::OpenSSL' ],
       ...
     );
+
+    # The wrapper will supply all compiler flags needed for
+    # your Perl module to use libneo4j-omni automatically.
+
+Supplying compiler flags manually (not recommended):
+
+    # for ExtUtils::MakeMaker
+    WriteMakefile(
+      CCFLAGS   => "$Config{ccflags} " . Neo4j::Client->cflags,
+      LIBS      => Neo4j::Client->libs,
+      ...
 
 # DESCRIPTION
 
@@ -28,9 +39,8 @@ autotools `autoconf-2.69`, `automake-1.16.3`, and `m4-1.4.18-patched`
 which are bundled with this distro and are known to work on this library.
 (These are required to build from ./configure for `libneo4j-omni`.)
 
-Thanks to the miracle of
-[Alien::Build](https://metacpan.org/pod/Alien::Build), the library
-should always contain OpenSSL support.
+Thanks to the miracle of [Alien::Build](https://metacpan.org/pod/Alien::Build), the library should always
+contain OpenSSL support.
 
 # SEE ALSO
 

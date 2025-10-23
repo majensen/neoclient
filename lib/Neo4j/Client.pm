@@ -11,14 +11,25 @@ Neo4j::Client - Build and use the libneo4j-omni library
 
 =head1 SYNOPSIS
 
- use ExtUtils::MakeMaker;
- use Neo4j::Client;
- 
- WriteMakefile(
-   LIBS => Neo4j::Client->libs,
-   CCFLAGS => Neo4j::Client->cflags,
-   ...
- );
+With L<Alien::Base::Wrapper> for L<perlxs>:
+
+  use Alien::Base::Wrapper 1.98 qw( WriteMakefile );
+
+  WriteMakefile(
+    alien_requires => [ 'Neo4j::Client', 'Alien::OpenSSL' ],
+    ...
+  );
+
+  # The wrapper will supply all compiler flags needed for
+  # your Perl module to use libneo4j-omni automatically.
+
+Supplying compiler flags manually (not recommended):
+
+  # for ExtUtils::MakeMaker
+  WriteMakefile(
+    CCFLAGS   => "$Config{ccflags} " . Neo4j::Client->cflags,
+    LIBS      => Neo4j::Client->libs,
+    ...
 
 =head1 DESCRIPTION
 
