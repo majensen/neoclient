@@ -23,6 +23,17 @@ With L<Alien::Base::Wrapper> for L<perlxs>:
   # The wrapper will supply all compiler flags needed for
   # your Perl module to use libneo4j-omni automatically.
 
+With L<FFI::Platypus>:
+
+  use FFI::CheckLib 0.25;
+  use FFI::Platypus;
+
+  my $ffi = FFI::Platypus->new;
+  $ffi->lib( find_lib_or_die(
+    alien => 'Neo4j::Client',
+    lib   => 'neo4j-client',
+  ));
+
 Supplying compiler flags manually (not recommended):
 
   # for ExtUtils::MakeMaker
@@ -30,6 +41,9 @@ Supplying compiler flags manually (not recommended):
     CCFLAGS   => "$Config{ccflags} " . Neo4j::Client->cflags,
     LIBS      => Neo4j::Client->libs,
     ...
+
+  # for FFI::Platypus
+  $ffi->lib( Neo4j::Client->dynamic_libs );
 
 =head1 DESCRIPTION
 

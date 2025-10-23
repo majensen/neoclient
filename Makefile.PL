@@ -37,6 +37,13 @@ WriteMakefile($mm->mm_args(
   },
   META_MERGE => {
     'meta-spec' => { version => 2 },
+    prereqs => {
+      develop => {
+        recommends => {
+          'FFI::Platypus' => 0,
+        },
+      },
+    },
     resources => {
       bugtracker => {
 	web => 'https://github.com/majensen/neoclient/issues',
