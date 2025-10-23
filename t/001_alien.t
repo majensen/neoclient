@@ -13,7 +13,6 @@ xs_ok $xs, with_subtest {
 
 diag(Neo4j::Client->cflags);
 diag(Neo4j::Client->libs);
-diag(Neo4j::Client->libs_static);
   
 done_testing;
 

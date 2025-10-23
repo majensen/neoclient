@@ -82,11 +82,16 @@ share sub {
     my $pfx = $bld->runtime_prop->{prefix};
 
     # We're using static libs for this 'share' install because that's more
-    # reliable; see Alien::Build::Manual::AlienAuthor.
+    # reliable; see Alien::Build::Manual::AlienAuthor. The *_static flags
+    # are probably automatically populated in Alien::Build, but it doesn't
+    # hurt to explicitly set them here.
 
+    $bld->runtime_prop->{libs_static} =
     $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
-    $bld->runtime_prop->{libs_static} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
+
+    $bld->runtime_prop->{cflags_static} =
     $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", "-iquote${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
+
     $bld->runtime_prop->{dev_cflags} = $dev_cflags;
   };
 };
