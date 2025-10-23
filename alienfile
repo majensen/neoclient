@@ -94,6 +94,7 @@ share sub {
 
     $bld->runtime_prop->{dev_cflags} = $dev_cflags;
     $bld->runtime_prop->{version} = $version;
+    $bld->runtime_prop->{legacy}->{inline_auto_include} = ['neo4j-client.h'];
   };
 };
 plugin "Gather::IsolateDynamic";

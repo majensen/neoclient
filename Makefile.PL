@@ -41,6 +41,7 @@ WriteMakefile($mm->mm_args(
       develop => {
         recommends => {
           'FFI::Platypus' => 0,
+          'Inline::C' => 0,
         },
       },
     },

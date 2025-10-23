@@ -16,6 +16,11 @@ With [Alien::Base::Wrapper](https://metacpan.org/pod/Alien::Base::Wrapper) for [
     # The wrapper will supply all compiler flags needed for
     # your Perl module to use libneo4j-omni automatically.
 
+With [Inline::C](https://metacpan.org/pod/Inline::C):
+
+    use Neo4j::Client 0.56;
+    use Inline 0.56 with => 'Neo4j::Client';
+
 With [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus):
 
     use FFI::CheckLib 0.25;
@@ -34,6 +39,11 @@ Supplying compiler flags manually (not recommended):
       CCFLAGS   => "$Config{ccflags} " . Neo4j::Client->cflags,
       LIBS      => Neo4j::Client->libs,
       ...
+
+    # for Inline::C
+    use Inline 0.51 C => Config =>
+      CCFLAGSEX => Neo4j::Client->cflags,
+      LIBS      => Neo4j::Client->libs;
 
     # for FFI::Platypus
     $ffi->lib( Neo4j::Client->dynamic_libs );
