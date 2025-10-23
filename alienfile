@@ -80,7 +80,11 @@ share sub {
     my ($bld) = @_;
     my ($dev_cflags, $pt_cflags, $pt_libs) = scan_config_log($bld);
     my $pfx = $bld->runtime_prop->{prefix};
-    $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/dynamic", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
+
+    # We're using static libs for this 'share' install because that's more
+    # reliable; see Alien::Build::Manual::AlienAuthor.
+
+    $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
     $bld->runtime_prop->{libs_static} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
     $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", "-iquote${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
     $bld->runtime_prop->{dev_cflags} = $dev_cflags;
