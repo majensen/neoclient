@@ -1,18 +1,34 @@
+# Backup files
 \.bak$
 \.old$
 ~$
 ^#.*#$
 ^\.#
+
+# SCM and OS files
+^\.git
+\.DS_Store$
+
+# MakeMaker files
 ^MANIFEST\.
+^Makefile$
 ^MakeMaker-\d
 ^MYMETA
-.git/.*
-.gitmodules
+
+# Build files
 _alien/.*
-libneo4j-omni/.*
-\/blib\/
+^blib/
+^pm_to_blib$
 try/.*
 Neo4j-Client.*tar.gz
+
+# Project files
+^libneo4j-omni/
+^BUILD\.md$
+^NC-MANIFEST$
+^nc-update\.pl$
 nc-update\.sh
+
+# Private files
 mdify\.pl
 \bnotes\b

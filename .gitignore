@@ -1,0 +1,10 @@
+*.bak
+*.old
+*~
+
+/Makefile
+/MYMETA.*
+
+/_alien/
+/blib/
+/pm_to_blib

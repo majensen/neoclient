@@ -61,6 +61,9 @@ WriteMakefile($mm->mm_args(
   dist => {
     TAR => 'ptar',  # avoid extended headers in tarball
   },
+  realclean => {
+    FILES => 'MANIFEST.bak build/configure~',
+  },
  ));
 
 sub MY::postamble {
