@@ -90,7 +90,7 @@ share sub {
     $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
 
     $bld->runtime_prop->{cflags_static} =
-    $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", "-iquote${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
+    $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
 
     $bld->runtime_prop->{dev_cflags} = $dev_cflags;
   };
