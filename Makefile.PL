@@ -43,6 +43,9 @@ WriteMakefile($mm->mm_args(
           'FFI::Platypus' => 0,
           'Inline::C' => 0,
         },
+        requires => {
+          'IPC::Run' => 0,  # nc-update
+        },
       },
     },
     resources => {
