@@ -37,6 +37,7 @@ jobs:
           END
           fi
           cpanm . --notest --installdeps --with-configure --skip-satisfied
+          cpanm FFI::Platypus Inline::C --notest --skip-satisfied
       - name: Build
         run: |
           perl Makefile.PL
@@ -67,13 +68,15 @@ jobs:
             File::Which
             Path::Tiny~0.014
 
-            Test2::V0
+            FFI::Platypus
+            Inline::C
 
           install-modules-with: cpanm
           install-modules-args: --skip-satisfied
       - name: Install dependencies
         run: |
           cpanm . --notest --installdeps --with-configure --skip-satisfied
+          cpanm FFI::Platypus Inline::C --notest --skip-satisfied
       - name: Build
         run: |
           perl Makefile.PL
