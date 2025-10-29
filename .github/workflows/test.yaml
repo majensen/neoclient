@@ -1,0 +1,83 @@
+name: Alien test
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+
+# The environments created by Docker and Setup action differ to the point where
+# we've seen linking fail in only one of them, so it's useful to test both.
+
+  docker-job:
+    name: Docker container
+    runs-on: ubuntu-latest
+    container:
+      image: perldocker/perl-tester:5.20
+    env:
+      AUTOMATED_TESTING: 1
+      NONINTERACTIVE_TESTING: 1
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v5
+      - name: Install dependencies
+        run: |
+          if ! [ -e cpanfile ]
+          then
+            cpanm --notest --skip-satisfied <<END
+
+            Alien::Build::MM~1.19
+            Alien::OpenSSL~0.09
+            Capture::Tiny
+            ExtUtils::MakeMaker~6.64
+            File::Which
+            Path::Tiny~0.014
+
+          END
+          fi
+          cpanm . --notest --installdeps --with-configure --skip-satisfied
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+      - name: Test
+        run: |
+          make test
+
+  shogo-job:
+    name: Setup action
+    runs-on: ubuntu-latest
+    env:
+      AUTOMATED_TESTING: 1
+      NONINTERACTIVE_TESTING: 1
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v5
+      - name: Install Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.40"
+          install-modules: >
+
+            Alien::Build::MM~1.19
+            Alien::OpenSSL~0.09
+            Capture::Tiny
+            ExtUtils::MakeMaker~6.64
+            File::Which
+            Path::Tiny~0.014
+
+            Test2::V0
+
+          install-modules-with: cpanm
+          install-modules-args: --skip-satisfied
+      - name: Install dependencies
+        run: |
+          cpanm . --notest --installdeps --with-configure --skip-satisfied
+      - name: Build
+        run: |
+          perl Makefile.PL
+          make
+      - name: Test
+        run: |
+          make test
