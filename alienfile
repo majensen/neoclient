@@ -87,7 +87,7 @@ share sub {
     # hurt to explicitly set them here.
 
     $bld->runtime_prop->{libs_static} =
-    $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/lib", $pt_libs, Alien::OpenSSL->libs, "-lneo4j-client");
+    $bld->runtime_prop->{libs} = join(' ', "-L${pfx}/lib", $pt_libs, "-lneo4j-client", Alien::OpenSSL->libs);
 
     $bld->runtime_prop->{cflags_static} =
     $bld->runtime_prop->{cflags} = join(' ', "-I${pfx}/include", $pt_cflags, Alien::OpenSSL->cflags);
