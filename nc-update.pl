@@ -175,6 +175,42 @@ $tgt->edit_lines(
 	$_ = "include_HEADERS = neo4j-client.h atomic.h buffering_iostream.h chunking_iostream.h client_config.h connection.h deserialization.h iostream.h job.h logging.h memory.h messages.h metadata.h network.h print.h posix_iostream.h render.h result_stream.h ring_buffer.h serialization.h thread.h tofu.h transaction.h uri.h util.h values.h\n";
     }) unless $dryrun;
 
+
+{
+  # Add neo4j_openssl_version() function for t/030_sslversion.t
+
+  $tgt = $build->child('lib/src/openssl.c');
+  say "update $tgt";
+  $tgt->edit_lines( sub {
+    m{#include <openssl/crypto.h>} and $_ = <<END;
+#include <openssl/crypto.h>
+#include <openssl/opensslv.h>
+END
+  }) unless $dryrun;
+  $tgt->append_raw(<<END) unless $dryrun;
+
+const char *neo4j_openssl_version(int t)
+{
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L /* 1.1.0 or later */
+    return OpenSSL_version(t > 0 ? t : OPENSSL_VERSION);
+#else
+    return SSLeay_version(t > 0 ? t : SSLEAY_VERSION);
+#endif
+}
+END
+
+  $tgt = $build->child('lib/src/neo4j-client.h.in');
+  say "update $tgt";
+  $tgt->edit_lines( sub {
+    m{#pragma GCC visibility pop} and $_ = <<END;
+const char *neo4j_openssl_version(int t); /* Internal - DO NOT USE */
+
+#pragma GCC visibility pop
+END
+  }) unless $dryrun;
+}
+
+
 ## Configure
 
 say "create new lib/Makefile.am";
