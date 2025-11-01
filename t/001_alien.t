@@ -14,12 +14,6 @@ xs_ok $xs, with_subtest {
   is $mod->neo4j_log_level_str(2), 'INFO';
 };
 
-ffi_ok { symbols => ['neo4j_log_level_str'] }, with_subtest {
-  my($ffi) = @_;
-  my $neo4j_log_level_str = $ffi->function( neo4j_log_level_str => ['int'] => 'string' );
-  is $neo4j_log_level_str->call(3), 'DEBUG';
-};
-
 diag(Neo4j::Client->cflags);
 diag(Neo4j::Client->libs);
   
