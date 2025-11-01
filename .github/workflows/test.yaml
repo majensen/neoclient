@@ -70,6 +70,8 @@ jobs:
 
             FFI::Platypus
             Inline::C
+            Test::CPAN::Changes
+            Test::Pod
 
           install-modules-with: cpanm
           install-modules-args: --skip-satisfied

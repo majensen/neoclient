@@ -92,10 +92,12 @@ diff MANIFEST.bak MANIFEST
 rm MANIFEST.bak
 git checkout -- MANIFEST
 
-# Create the dist tarball
+# Create and test the dist tarball
 # (running `make` or `make test` isn't necessary before `make dist`)
 make dist
-
-# Test the dist tarball
 cpanm --test-only Neo4j-Client-*.tar.gz
+
+# See full test output
+cpanm --installdeps --with-develop --with-recommends Neo4j-Client-*.tar.gz
+make && prove -b
 ```

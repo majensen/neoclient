@@ -42,6 +42,8 @@ WriteMakefile($mm->mm_args(
         recommends => {
           'FFI::Platypus' => 0,
           'Inline::C' => 0,
+          'Test::CPAN::Changes' => 0,
+          'Test::Pod' => 0,
         },
         requires => {
           'IPC::Run' => 0,  # nc-update

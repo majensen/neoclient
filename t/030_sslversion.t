@@ -3,7 +3,6 @@ use Test::Alien;
 use Neo4j::Client;
 
 alien_ok 'Neo4j::Client';
-
 my $xs = do { local $/; <DATA> };
 xs_ok $xs, with_subtest {
   my($mod) = @_;
