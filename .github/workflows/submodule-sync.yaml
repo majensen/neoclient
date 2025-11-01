@@ -1,0 +1,51 @@
+name: Sync check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+  pull_request:
+
+jobs:
+
+  sync-check-job:
+    name: Sync check
+    runs-on: ubuntu-latest
+    env:
+      AUTOMATED_TESTING: 1
+      NONINTERACTIVE_TESTING: 1
+      RELEASE_TESTING: 1
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - name: Install Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.36"
+          install-modules: >
+            IPC::Run
+            Path::Tiny
+          install-modules-with: cpanm
+          install-modules-args: --skip-satisfied
+      - name: Run nc-update
+        run: |
+          perl nc-update.pl --force
+      - name: Verify build dir is in sync with submodule
+        run: |
+          git status --untracked-files=no --porcelain=v1 |
+            grep -E '\.(ac|am|c|h)$|neo4j-client\.h\.in|autogen\.sh' |
+            tee git-status
+          git diff -- '*.ac' '*.am' '*.c' '*.h' neo4j-client.h.in autogen.sh
+          test ! -s git-status
+
+# Untracked files are currently skipped here because nc-update.pl creates
+# some files in build that are neither committed nor are they in .gitignore
+# and I haven't looked into which of these two would be correct.
+
+# If this workflow fails, you probably forgot to commit the changes made by nc-update.pl.
+
+# To skip this workflow in case of intentional differences between submodule and build dir:
+# https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs
