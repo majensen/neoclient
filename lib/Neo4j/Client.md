@@ -35,6 +35,7 @@ With [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus):
 Supplying compiler flags manually (not recommended):
 
     # for ExtUtils::MakeMaker
+    use Config;
     WriteMakefile(
       CCFLAGS   => "$Config{ccflags} " . Neo4j::Client->cflags,
       LIBS      => Neo4j::Client->libs,
@@ -67,6 +68,14 @@ Thanks to the miracle of [Alien::Build](https://metacpan.org/pod/Alien::Build), 
 contain OpenSSL support. This is already taken into account by the
 methods in [Alien::Base](https://metacpan.org/pod/Alien::Base), which are inherited by this module.
 You shouldn't need to add any extra compiler flags for OpenSSL.
+
+# BUGS
+
+The minimum supported version of OpenSSL is currently 1.1.0.
+([GH #7](https://github.com/majensen/neoclient/issues/7))
+
+The C compiler must support the `-Wpedantic` and `-Wvla` options.
+([GH #8](https://github.com/majensen/neoclient/issues/8))
 
 # SEE ALSO
 
