@@ -11,6 +11,9 @@ BEGIN {
 
 use Inline with => 'Neo4j::Client';
 
+use Inline C => Config => typemaps =>
+  $::inline_dir->child('typemap')->spew_raw('uint_fast8_t T_UV')->stringify;
+
 use Inline C => 'DATA', autowrap => 1;
 
 is log_level_4_as_string(), 'TRACE', 'indirect call';
@@ -25,4 +28,4 @@ const char *log_level_4_as_string() {
   return neo4j_log_level_str(4);
 }
 
-extern const char *neo4j_log_level_str(U8 level);
+const char *neo4j_log_level_str(uint_fast8_t level);
