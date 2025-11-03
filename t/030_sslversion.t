@@ -2,6 +2,11 @@ use Test2::V0;
 use Test::Alien;
 use Neo4j::Client;
 
+BEGIN {
+  require Alien::OpenSSL;
+  diag('Alien::OpenSSL package version ' . Alien::OpenSSL->version);
+}
+
 alien_ok 'Neo4j::Client';
 my $xs = do { local $/; <DATA> };
 xs_ok $xs, with_subtest {
